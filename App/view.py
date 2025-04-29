@@ -61,16 +61,47 @@ def print_req_1(control):
     else:
         print("\nNo se encontraron crímenes en el rango de fechas dado.\n")
 
-# Todo este view es temporal, solo era para guiarme mejor
+
 def print_req_2(control):
-    print("\nEjecutando Requerimiento 2:")
-    resultado = logic.req_2(control)
-    print(resultado)
+    """
+    Función que imprime la solución del Requerimiento 2 en consola
+    """
+    fecha_inicial = input("Ingrese la fecha inicial (formato YYYY-MM-DD):\n")
+    fecha_final = input("Ingrese la fecha final (formato YYYY-MM-DD):\n")
+    resultados = logic.req_2(control, fecha_inicial, fecha_final)
+
+    if resultados:
+        print(f"\nSe encontraron {len(resultados)} crímenes graves resueltos en el rango dado.\n")
+        
+        print("Mostrando los primeros 5 resultados:\n")
+        print("DR_NO\t\tDATE OCC\tTIME OCC\tAREA\tRpt Dist No\tPart 1-2\tCrm Cd\tStatus")
+        print("-" * 100)
+
+        for crimen in resultados[:5]:
+            print(f"{crimen['DR_NO']}\t{crimen['DATE OCC']}\t{crimen['TIME OCC']}\t{crimen['AREA']}\t{crimen['Rpt Dist No']}\t\t{crimen['Part 1-2']}\t\t{crimen['Crm Cd']}\t{crimen['Status']}")
+    else:
+        print("\nNo se encontraron crímenes graves resueltos en el rango de fechas dado.\n")
 
 def print_req_3(control):
-    print("\nEjecutando Requerimiento 3:")
-    resultado = logic.req_3(control)
-    print(resultado)
+    """
+    Función que imprime la solución del Requerimiento 3 en consola
+    """
+    area_name = input("Ingrese el nombre del área (tal como aparece en los datos, por ejemplo 'Hollywood'):\n")
+    n = int(input("Ingrese el número de crímenes más recientes que desea listar:\n"))
+    resultados = logic.req_3(control, area_name, n)
+
+    if resultados:
+        print(f"\nSe encontraron {len(resultados)} crímenes en el área {area_name.title()}.\n")
+        
+        print("Mostrando los crímenes más recientes:\n")
+        print("DR_NO\t\tDATE OCC\tTIME OCC\tAREA\tRpt Dist No\tPart 1-2\tCrm Cd\tStatus\tLOCATION")
+        print("-" * 120)
+
+        for crimen in resultados:
+            print(f"{crimen['DR_NO']}\t{crimen['DATE OCC']}\t{crimen['TIME OCC']}\t{crimen['AREA']}\t{crimen['Rpt Dist No']}\t\t{crimen['Part 1-2']}\t\t{crimen['Crm Cd']}\t{crimen['Status']}\t{crimen['LOCATION']}")
+    else:
+        print(f"\nNo se encontraron crímenes en el área {area_name.title()}.\n")
+
 
 def print_req_4(control):
     print("\nEjecutando Requerimiento 4:")
@@ -83,14 +114,49 @@ def print_req_5(control):
     print(resultado)
 
 def print_req_6(control):
-    print("\nEjecutando Requerimiento 6:")
-    resultado = logic.req_6(control)
-    print(resultado)
+    """
+    Función que imprime la solución del Requerimiento 6 en consola
+    """
+    sexo = input("Ingrese el sexo a consultar (M o F):\n")
+    mes = int(input("Ingrese el número del mes (1-12):\n"))
+    n = int(input("Ingrese el número de áreas a listar:\n"))
+
+    resultados = logic.req_6(control, sexo, mes, n)
+
+    if resultados:
+        print(f"\nSe encontraron {len(resultados)} áreas más seguras para sexo {sexo.upper()} en el mes {mes}.\n")
+        
+        print("AREA\tAREA NAME\t\tTotal Crímenes\tCrímenes por Año")
+        print("-" * 100)
+
+        for area in resultados:
+            print(f"{area['AREA']}\t{area['AREA NAME']}\t{area['Total Crímenes']}\t{area['Crímenes por Año']}")
+    else:
+        print("\nNo se encontraron áreas que cumplan con los criterios dados.\n")
+
 
 def print_req_7(control):
-    print("\nEjecutando Requerimiento 7:")
-    resultado = logic.req_7(control)
-    print(resultado)
+    """
+    Función que imprime la solución del Requerimiento 7 en consola
+    """
+    sexo = input("Ingrese el sexo de la víctima (M o F):\n")
+    edad_inicial = int(input("Ingrese la edad mínima:\n"))
+    edad_final = int(input("Ingrese la edad máxima:\n"))
+    n = int(input("Ingrese el número de tipos de crimen más comunes que desea listar:\n"))
+
+    resultados = logic.req_7(control, sexo, edad_inicial, edad_final, n)
+
+    if resultados:
+        print(f"\nSe encontraron {len(resultados)} tipos de crímenes más comunes para víctimas {sexo.upper()} entre {edad_inicial} y {edad_final} años.\n")
+        
+        print("Crm Cd\tTotal Crímenes\tCrímenes por Edad\tCrímenes por Año")
+        print("-" * 100)
+
+        for crimen in resultados:
+            print(f"{crimen['Crm Cd']}\t{crimen['Total Crímenes']}\t{crimen['Crímenes por Edad']}\t{crimen['Crímenes por Año']}")
+    else:
+        print("\nNo se encontraron crímenes que cumplan con los criterios dados.\n")
+
 
 def print_req_8(control):
     print("\nEjecutando Requerimiento 8 (BONO):")
