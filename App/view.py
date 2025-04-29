@@ -1,12 +1,5 @@
 import sys
-
-
-def new_logic():
-    """
-        Se crea una instancia del controlador
-    """
-    #TODO: Llamar la función de la lógica donde se crean las estructuras de datos
-    pass
+from App import logic
 
 def print_menu():
     print("Bienvenido")
@@ -23,126 +16,126 @@ def print_menu():
 
 def load_data(control):
     """
-    Carga los datos
+    Carga los datos basado en la densidad de datos que desea el usuario
     """
-    #TODO: Realizar la carga de datos
-    pass
+    print("¿Qué densidad de datos deseas cargar?")
+    print("Opciones: 20, 40, 60, 80, 100")
+    porcentaje = input("Escribe solo el número (por ejemplo 20):\n").strip()
 
+    # Verificamos que esté entre las opciones válidas
+    if porcentaje not in {"20", "40", "60", "80", "100"}:
+        print("Opción inválida. Se cargará Crime_in_LA_20.csv por defecto.")
+        porcentaje = "20"
+
+    filename = f"Crime_in_LA_{porcentaje}.csv"
+    total_crimes = logic.load_data(control, filename)
+    print(f"\nSe cargaron {total_crimes} crímenes desde {filename}.\n")
 
 def print_data(control, id):
     """
-        Función que imprime un dato dado su ID
+    Función que imprime un dato dado su ID
     """
-    #TODO: Realizar la función para imprimir un elemento
-    pass
+    crime = logic.get_data(control, id)
+    if crime:
+        print(crime)
+    else:
+        print("No se encontró el crimen con el ID dado.")
 
 def print_req_1(control):
     """
-        Función que imprime la solución del Requerimiento 1 en consola
+    Función que imprime la solución del Requerimiento 1 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 1
-    pass
+    fecha_inicial = input("Ingrese la fecha inicial (formato YYYY-MM-DD):\n")
+    fecha_final = input("Ingrese la fecha final (formato YYYY-MM-DD):\n")
+    resultados = logic.req_1(control, fecha_inicial, fecha_final)
 
+    if resultados:
+        print(f"\nSe encontraron {len(resultados)} crímenes en el rango dado.\n")
+        
+        print("Mostrando los primeros 5 resultados:\n")
+        print("DR_NO\t\tDATE OCC\tTIME OCC\tAREA NAME\t\tCrm Cd\tLOCATION")
+        print("-" * 80)
 
+        for crimen in resultados[:5]:
+            print(f"{crimen['DR_NO']}\t{crimen['DATE OCC']}\t{crimen['TIME OCC']}\t\t{crimen['AREA NAME']}\t{crimen['Crm Cd']}\t{crimen['LOCATION']}")
+    else:
+        print("\nNo se encontraron crímenes en el rango de fechas dado.\n")
+
+# Todo este view es temporal, solo era para guiarme mejor
 def print_req_2(control):
-    """
-        Función que imprime la solución del Requerimiento 2 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 2
-    pass
-
+    print("\nEjecutando Requerimiento 2:")
+    resultado = logic.req_2(control)
+    print(resultado)
 
 def print_req_3(control):
-    """
-        Función que imprime la solución del Requerimiento 3 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 3
-    pass
-
+    print("\nEjecutando Requerimiento 3:")
+    resultado = logic.req_3(control)
+    print(resultado)
 
 def print_req_4(control):
-    """
-        Función que imprime la solución del Requerimiento 4 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 4
-    pass
-
+    print("\nEjecutando Requerimiento 4:")
+    resultado = logic.req_4(control)
+    print(resultado)
 
 def print_req_5(control):
-    """
-        Función que imprime la solución del Requerimiento 5 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 5
-    pass
-
+    print("\nEjecutando Requerimiento 5:")
+    resultado = logic.req_5(control)
+    print(resultado)
 
 def print_req_6(control):
-    """
-        Función que imprime la solución del Requerimiento 6 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 6
-    pass
-
+    print("\nEjecutando Requerimiento 6:")
+    resultado = logic.req_6(control)
+    print(resultado)
 
 def print_req_7(control):
-    """
-        Función que imprime la solución del Requerimiento 7 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 7
-    pass
-
+    print("\nEjecutando Requerimiento 7:")
+    resultado = logic.req_7(control)
+    print(resultado)
 
 def print_req_8(control):
-    """
-        Función que imprime la solución del Requerimiento 8 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 8
-    pass
+    print("\nEjecutando Requerimiento 8 (BONO):")
+    resultado = logic.req_8(control)
+    print(resultado)
 
-
-# Se crea la lógica asociado a la vista
-control = new_logic()
-
-# main del ejercicio
 def main():
     """
     Menu principal
     """
+    control = logic.init()  # Ahora creamos el catálogo aquí
     working = True
-    #ciclo del menu
     while working:
         print_menu()
         inputs = input('Seleccione una opción para continuar\n')
-        if int(inputs) == 1:
-            print("Cargando información de los archivos ....\n")
-            data = load_data(control)
-        elif int(inputs) == 2:
-            print_req_1(control)
-
-        elif int(inputs) == 3:
-            print_req_2(control)
-
-        elif int(inputs) == 4:
-            print_req_3(control)
-
-        elif int(inputs) == 5:
-            print_req_4(control)
-
-        elif int(inputs) == 6:
-            print_req_5(control)
-
-        elif int(inputs) == 7:
-            print_req_6(control)
-
-        elif int(inputs) == 8:
-            print_req_7(control)
-
-        elif int(inputs) == 9:
-            print_req_8(control)
-
-        elif int(inputs) == 0:
-            working = False
-            print("\nGracias por utilizar el programa") 
+        if inputs.isdigit():
+            inputs = int(inputs)
+            if inputs == 1:
+                load_data(control)
+            elif inputs == 2:
+                print_req_1(control)
+            elif inputs == 3:
+                print_req_2(control)
+            elif inputs == 4:
+                print_req_3(control)
+            elif inputs == 5:
+                print_req_4(control)
+            elif inputs == 6:
+                print_req_5(control)
+            elif inputs == 7:
+                print_req_6(control)
+            elif inputs == 8:
+                print_req_7(control)
+            elif inputs == 9:
+                print_req_8(control)
+            elif inputs == 0:
+                working = False
+                print("\nGracias por utilizar el programa.")
+            else:
+                print("Opción errónea, vuelva a elegir.\n")
         else:
-            print("Opción errónea, vuelva a elegir.\n")
+            print("Por favor ingrese un número válido.\n")
     sys.exit(0)
+
+if __name__ == "__main__":
+    default_limit = 1000
+    sys.setrecursionlimit(default_limit * 10)
+    main()

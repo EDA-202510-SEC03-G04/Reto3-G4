@@ -1,39 +1,91 @@
 import time
+import csv
+from datetime import datetime
 
-def new_logic():
-    """
-    Crea el catalogo para almacenar las estructuras de datos
-    """
-    #TODO: Llama a las funciónes de creación de las estructuras de datos
-    pass
+csv.field_size_limit(2147483647)
 
+def init():
+    """
+    Crea el catálogo para almacenar las estructuras de datos
+    """
+    catalog = {
+        'crimes': []  # Acá lo cmabipe por init, para que no nos confundamos cuando llamamos a la función en otros lados 
+    }
+    return catalog
 
 # Funciones para la carga de datos
 
 def load_data(catalog, filename):
     """
-    Carga los datos del reto
+    Carga los datos del archivo CSV dado y los almacena en el catálogo
     """
-    # TODO: Realizar la carga de datos
-    pass
-
-# Funciones de consulta sobre el catálogo
+    filepath = f"Data/Crime_in_LA/{filename}"  # como el  nombre del archivo es solo uno, se maneja la cantidad de los datos desde el view
+    with open(filepath, encoding="utf-8-sig") as csvfile:
+        input_file = csv.DictReader(csvfile)
+        for crime in input_file:
+            catalog['crimes'].append(crime)
+    return len(catalog['crimes'])  # Retorna la cantidad de crímenes cargados
 
 def get_data(catalog, id):
     """
-    Retorna un dato por su ID.
+    Retorna un dato por su ID (DR_NO).
     """
-    #TODO: Consulta en las Llamar la función del modelo para obtener un dato
-    pass
+    for crime in catalog['crimes']:
+        if crime['DR_NO'] == id:
+            return crime
+    return None
 
 
-def req_1(catalog):
+def req_1(catalog, fecha_inicial, fecha_final):
     """
-    Retorna el resultado del requerimiento 1
+    Retorna los crímenes ocurridos entre dos fechas dadas, ordenados del más reciente al más antiguo.
+    Muestra los primeros 5 crímenes encontrados.
     """
-    # TODO: Modificar el requerimiento 1
-    pass
+    crimes_in_range = []
 
+    # Convertimos las fechas de entrada a objetos con el datetime
+    fecha_inicial_dt = datetime.strptime(fecha_inicial, "%Y-%m-%d")
+    fecha_final_dt = datetime.strptime(fecha_final, "%Y-%m-%d")
+
+    for crime in catalog['crimes']:
+        date_occ_str = crime['DATE OCC']
+        try:
+            # TOMAMOS SOLO LA FECHA (sin la hora para que no salgan errores) 
+            date_only_str = date_occ_str.split(' ')[0]
+            date_occ_dt = datetime.strptime(date_only_str, "%m/%d/%Y")
+            if fecha_inicial_dt <= date_occ_dt <= fecha_final_dt:
+                crimes_in_range.append(crime)
+        except ValueError:
+            # Si hay error de formato de fecha, ignoramos ese registro
+            continue
+
+    # Ordenar:
+    #  Primero por fecha más reciente
+    #  Luego por TIME OCC más alto (hora más reciente)
+    #  Luego por AREA NAME en orden descendente
+    def sort_key(crime):
+        date_occ = datetime.strptime(crime['DATE OCC'].split(' ')[0], "%m/%d/%Y")
+        time_occ = int(crime['TIME OCC'])  # TIME OCC es un entero de formato HHMM
+        area_name = crime['AREA NAME']
+        return (-date_occ.timestamp(), -time_occ, area_name)
+
+    crimes_in_range.sort(key=sort_key)
+
+    # Construimos la respuesta final
+    result = []
+    for crime in crimes_in_range:
+        result.append({
+        "DR_NO": crime["DR_NO"],
+        "DATE OCC": crime["DATE OCC"].split(' ')[0],  
+        "TIME OCC": crime["TIME OCC"],
+        "AREA NAME": crime["AREA NAME"],
+        "Crm Cd": crime["Crm Cd"],
+        "LOCATION": crime["LOCATION"]
+    })
+
+    return result
+
+16,657
 
 def req_2(catalog):
     """
@@ -90,18 +142,14 @@ def req_8(catalog):
     pass
 
 
-# Funciones para medir tiempos de ejecucion
+
 
 def get_time():
-    """
-    devuelve el instante tiempo de procesamiento en milisegundos
-    """
+    
     return float(time.perf_counter()*1000)
 
 
 def delta_time(start, end):
-    """
-    devuelve la diferencia entre tiempos de procesamiento muestreados
-    """
+    
     elapsed = float(end - start)
     return elapsed
