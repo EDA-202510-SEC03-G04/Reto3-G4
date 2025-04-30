@@ -1,20 +1,58 @@
 import time
 import csv
 from datetime import datetime
-
+from DataStructures import tree as bst
+from DataStructures import array_list as lt
 csv.field_size_limit(2147483647)
 
 def init():
     """
     Crea el catálogo para almacenar las estructuras de datos
+    
     """
+     
     catalog = {
         'crimes': []  # Acá lo cmabipe por init, para que no nos confundamos cuando llamamos a la función en otros lados 
-    }
+    } 
+    catalog["date_index"] = bst.new_tree() 
+    catalog["age_index"] = bst.new_tree() 
     return catalog
 
 # Funciones para la carga de datos
-
+def load_date_tree(catalog):
+    
+    crimes = catalog["crimes"]
+    
+    for crime in crimes["elements"]:
+        date_index = crime["DATE OCC"][0:10]
+        lista = bst.get(catalog["date_index"], date_index)
+    
+        if lista != None:
+            lt.add_last(lista, crime)
+        else:
+            new_list = lt.new_list()
+            lt.add_last(new_list, crime)
+            bst.put(catalog["date_index"], date_index, new_list)
+        
+        
+def load_age_tree(catalog):
+    
+    crimes = catalog["crimes"]
+    
+    for crime in crimes["elements"]:
+        age_index = crime["Vict age"]
+        lista = bst.get(catalog["age_index"], age_index)
+    
+        if lista != None:
+            lt.add_last(lista, crime)
+        else:
+            new_list = lt.new_list()
+            lt.add_last(new_list, crime)
+            bst.put(catalog["age_index"], age_index, new_list)        
+    
+    
+    
+    
 def load_data(catalog, filename):
     """
     Carga los datos del archivo CSV dado y los almacena en el catálogo
@@ -173,23 +211,101 @@ def req_3(catalog, area_name, n):
 
     return result
 
+def sort_req4(data_1,data_2):
+    
+    if int(data_1["part 1-2"]) < int(data_2["part 1-2"]):
+        if int(data_1["Vict age"]) > int(data_2["Vict age"]):
+            return True
+        elif int(data_1["Vict age"]) == int(data_2["Vict age"]):
+            if data_1["DATE OCC"][0:10] < data_2["DATE_OCC"][0:10]:
+                return True
+
+    return False
+    
 
 
-def req_4(catalog):
+def req_4(catalog,N, min_age, max_age):
     """
     Retorna el resultado del requerimiento 4
     """
-    # TODO: Modificar el requerimiento 4
-    pass
+    
+    tree_by_age = catalog["age_index"]
+    
+    list_filtered = lt.new_list()
+    
+    list_values_range = bst.values(tree_by_age, min_age, max_age)
+    
+    for internal_list in list_values_range:
+        for crime in internal_list["elements"]:
+        
+            lt.add_last(list_filtered, crime)
+    list_sorted = lt.merge_sort(list_filtered, sort_req4)
+            
+            
+    if lt.size(list_sorted) > N:
+        return lt.sub_list(list_sorted, 0, N)
+    else:
+        return list_sorted
+            
+ 
+    
+def sort_req5(data_1,data_2):
+    
+    if data_1["Not_resolved"] < data_2["Not_resolved"]:
+        return True
+    elif data_1["Not_resolved"] == data_2["Not_resolved"]:
+         
+         if data_1["AREA NAME"] < data_2["AREA NAME"]:
+             return True
+         
+    return False       
 
 
-def req_5(catalog):
+def req_5(catalog,N , date_min, date_max):
     """
     Retorna el resultado del requerimiento 5
     """
-    # TODO: Modificar el requerimiento 5
-    pass
-
+    tree_by_date = catalog["date_index"]
+    
+    list_areas_control = lt.new_list()
+    list_areas = lt.new_list()
+    list_values_range = bst.values(tree_by_date, date_min, date_max)
+    
+    for list_value in list_values_range:
+        for crime in list_value["elements"]:
+            crime_area = crime["AREA"]
+            index = lt.is_present(list_areas_control, crime_area)
+            if index == -1:
+                lt.add_last(list_areas_control, crime_area)
+                dict_area = {"AREA": crime_area,
+                "AREA NAME": crime["AREA NAME"],
+                "Not_resolved": 0, 
+                "first":crime,
+                "last": crime}
+                
+                if crime["Status"]  == "IC":
+                    
+                    dict_area["Not_resolved"] += 1
+                    lt.add_last(list_areas, dict_area)
+            else:
+                dict_area = lt.get_element(list_areas, index)
+                
+                if crime["Status"] == "IC":
+                    dict_area["Not_resolved"] += 1
+                    
+                if dict_area["first"]["DATE OCC"][0:10] > crime["DATE OCC"][0:10]:
+                       dict_area["first"] = crime
+                
+                if dict_area["last"]["DATE OCC"][0:10] < crime["DATE OCC"][0:10]:
+                    dict_area["last"] = crime           
+    
+    sorted_list = lt.merge_sort(list_areas, sort_req5)
+    
+    if lt.size(sorted_list) > N:
+        return lt.sub_list(sorted_list, 0, N)
+    else:
+        return sorted_list        
+                
 def req_6(catalog, sexo, mes, n):
     """
     Retorna las N áreas más seguras para un sexo en un mes específico.

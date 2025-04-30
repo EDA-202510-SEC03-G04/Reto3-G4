@@ -1,5 +1,6 @@
 import sys
 from App import logic
+from tabulate import tabulate 
 
 def print_menu():
     print("Bienvenido")
@@ -105,13 +106,64 @@ def print_req_3(control):
 
 def print_req_4(control):
     print("\nEjecutando Requerimiento 4:")
-    resultado = logic.req_4(control)
-    print(resultado)
+    N = int(input("Ingrese el número de crímenes a listar:\n"))
+    min_age = int(input("Ingrese la edad mínima:\n"))
+    max_age = int(input("Ingrese la edad máxima:\n"))
+    resultado = control.req_4(control, N, min_age, max_age)
+    crimenes = resultado["elements"]
+    
+    print(f"\nNúmero total de crímenes que cumplen el criterio: {len(crimenes)}\n")
+
+    tabla = []
+    for crimen in crimenes:
+        fila = [
+            crimen.get("DR_NO", ""),          # ID del reporte
+            crimen.get("DATE OCC", ""),       # Fecha en que ocurrió
+            crimen.get("TIME OCC", ""),       # Hora del crimen
+            crimen.get("AREA NAME", ""),      # Área
+            crimen.get("Rpt Dist No", ""),    # Subárea
+            crimen.get("Part 1-2", ""),       # Gravedad (Part 1 o Part 2)
+            crimen.get("Crm Cd", ""),         # Código del crimen
+            crimen.get("Vict Age", ""),       # Edad de la víctima
+            crimen.get("Status", ""),         # Estado del caso
+            crimen.get("LOCATION", "")        # Dirección del crimen
+        ]
+        tabla.append(fila)
+
+    headers = [
+        "ID Reporte", "Fecha", "Hora", "Área", "Subárea", "Gravedad",
+        "Código", "Edad Víctima", "Estado del Caso", "Dirección"
+    ]
+
+    print(tabulate(tabla, headers=headers, tablefmt="grid"))
 
 def print_req_5(control):
     print("\nEjecutando Requerimiento 5:")
-    resultado = logic.req_5(control)
-    print(resultado)
+    N = int(input("Ingrese el número de áreas a listar:\n"))
+    date_min = input("Ingrese la fecha mínima (formato YYYY-MM-DD):\n")
+    date_max = input("Ingrese la fecha máxima (formato YYYY-MM-DD):\n")
+    resultado = control.req_5(control, N, date_min, date_max)
+    areas = resultado["elements"]
+
+    print(f"\nSe encontraron {len(areas)} áreas en el rango de fechas dado.\n")
+
+    tabla = []
+    for area in areas:
+        fila = [
+            area.get("AREA", ""),
+            area.get("AREA NAME", ""),
+            area.get("Not_resolved", 0),
+            area["first"].get("DATE OCC", "")[:10],
+            area["last"].get("DATE OCC", "")[:10]
+        ]
+        tabla.append(fila)
+
+    headers = [
+        "Área", "Nombre del Área", "Crímenes No Resueltos",
+        "Fecha del Primer Crimen", "Fecha del Último Crimen"
+    ]
+
+    print(tabulate(tabla, headers=headers, tablefmt="grid"))
 
 def print_req_6(control):
     """
