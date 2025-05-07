@@ -1,5 +1,5 @@
 import sys
-from App import logic
+from App import logic   
 from tabulate import tabulate 
 
 def print_menu():
@@ -219,7 +219,7 @@ def main():
     """
     Menu principal
     """
-    control = logic.init()  # Ahora creamos el catálogo aquí
+    control = logic.main()  # Ahora creamos el catálogo aquí
     working = True
     while working:
         print_menu()

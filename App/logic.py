@@ -1,8 +1,8 @@
 import time
 import csv
 from datetime import datetime
-from DataStructures import tree as bst
-from DataStructures import array_list as lt
+from DataStructures import Tree as bst
+from DataStructures import List as lt
 csv.field_size_limit(2147483647)
 
 def init():
